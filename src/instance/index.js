@@ -18,14 +18,15 @@ function proxy (target, sourceKey, key) {
 }
 
 function Vue (options) {
+  let vm = this
   let data = options.data
-  this._data = data
+  vm._data = data
 
   const keys = Object.keys(data)
   let i = keys.length
   while (i--) {
     const key = keys[i]
-    proxy(this, `_data`, key)
+    proxy(vm, `_data`, key)
   }
 
   observe(data)

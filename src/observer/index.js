@@ -1,6 +1,6 @@
 import Dep from './dep'
 import { arrayMethods } from './array'
-import { def, isObject } from '../util/index'
+import { def, isObject, isValidArrayIndex, hasOwn } from '../util/index'
 
 export class Observer {
   constructor (value) {
@@ -65,6 +65,47 @@ export function defineReactive (obj, key, val) {
   })
 }
 
-export function set () {}
+export function set (target, key, val) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key)
+    target.splice(key, 1, val)
+    return val
+  }
 
-export function del () {}
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val
+    return val
+  }
+  
+  const ob = target.__ob__
+
+  if (!ob) {
+    target[key] = val
+    return val
+  }
+
+  defineReactive(ob.value, key, val)
+
+  ob.dep.notify()
+
+  return val
+}
+
+export function del (target, key, val) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1)
+    return
+  }
+  const ob = target.__ob__
+
+  if (!hasOwn(target, key)) {
+    return
+  }
+
+  delete target[key]
+
+  if (!ob) {
+    return
+  }
+  ob.dep.notify()
+}
