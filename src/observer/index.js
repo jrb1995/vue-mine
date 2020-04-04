@@ -52,6 +52,8 @@ export function defineReactive (obj, key, val) {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      // 将 Watcher 添加到订阅
+      dep.depend()
       return val
     },
     set: function reactiveSetter (newVal) {
@@ -60,6 +62,7 @@ export function defineReactive (obj, key, val) {
       }
       val = newVal
       childOb = observe(newVal)
+      // 执行 watcher 的 update 方法
       dep.notify()
     }
   })

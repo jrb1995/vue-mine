@@ -1,4 +1,5 @@
 import { observe, set, del } from '../observer/index'
+import Watcher from '../observer/watcher'
 
 const sharedPropertyDefinition = {
   enumerable: true,
@@ -30,6 +31,8 @@ function Vue (options) {
   }
 
   observe(data)
+  /* 新建一个 Watcher 观察者对象，这时候 Dep.target 会指向这个 Watcher 对象 */
+  new Watcher(data, val => val)
 }
 
 Vue.prototype.$set = set
